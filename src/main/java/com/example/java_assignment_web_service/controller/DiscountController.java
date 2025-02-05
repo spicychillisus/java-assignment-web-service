@@ -1,9 +1,11 @@
 package com.example.java_assignment_web_service.controller;
 
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.*;
 import com.example.java_assignment_web_service.db.Discount;
 import com.example.java_assignment_web_service.db.DiscountModel;
+import com.example.java_assignment_web_service.db.DiscountOwner;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +28,7 @@ public class DiscountController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, path="/getAllDiscounts")
-	public ArrayList<Discount> getAllDiscounts() {
+	public ArrayList<Discount> getAllDiscounts() throws SQLException {
 		ArrayList<Discount> discounts = new ArrayList<>();
 		try {
 			discounts = model.getAllDiscounts();
@@ -37,18 +39,36 @@ public class DiscountController {
 	}
 	
 	@RequestMapping(path="/createDiscount", consumes="application/json", method=RequestMethod.POST)
-	public int insertDiscount(
-			String code, 
-			Double discount_value, String description, 
-			Timestamp start_date, Timestamp end_date, 
-			Timestamp created_at
-			) {
+	public int insertDiscount(@RequestBody Discount discount) {
+		int rc = 0;
+		try {
+		} catch (Exception e) {
+			int id = discount.getId();
+			String code = discount.getCode();
+			Double discountValue = discount.getDiscountValue();
+		}
+		return rc;
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, path="/getDiscountOwner/{discountid}")
+	public ArrayList<DiscountOwner> viewDiscountOwners(@PathVariable("discountid") int discountid) {
+		ArrayList<DiscountOwner> discountOwners = null;
+		try {
+			discountOwners = model.viewDiscountOwners(discountid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return discountOwners;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST)
+	public int addNewDiscountToUser(int discountId, int userId) {
 		int rc = 0;
 		try {
 			
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
-		return 0;
+		return rc;
 	}
 }

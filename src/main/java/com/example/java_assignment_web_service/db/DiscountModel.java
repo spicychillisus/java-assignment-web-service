@@ -96,6 +96,38 @@ public class DiscountModel {
 		return rc;
 	}
 	
+	public ArrayList<DiscountOwner> viewDiscountOwners(int discountid) throws SQLException {
+	    ArrayList<DiscountOwner> discountOwners = new ArrayList<>();
+	    String sql = "SELECT discountid, discount_code, usage_allowed, userid FROM discount_owners WHERE discountid = ?";
+	    Connection conn = null;
+	    
+	    try {
+	        Class.forName("org.postgresql.Driver");
+	        conn = DriverManager.getConnection(url, username, dbPassword);
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	        ps.setInt(1, discountid); // Corrected index from 2 to 1
+	        ResultSet rs = ps.executeQuery();
+	        System.out.println(discountid);
+	        while (rs.next()) {
+	            DiscountOwner discountOwner = new DiscountOwner();
+	            discountOwner.setId(rs.getInt("id"));
+	            discountOwner.setDiscountId(rs.getInt("discountid"));
+	            discountOwner.setDiscountCode(rs.getString("discount_code"));
+	            discountOwner.setUsageAllowed(rs.getInt("usage_allowed"));
+	            discountOwner.setUserid(rs.getInt("userid"));
+	            discountOwners.add(discountOwner);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (conn != null) {
+	            conn.close();
+	        }
+	    }
+	    return discountOwners;
+	}
+
+	
 	public int addNewDiscountToUser(int discountId, int userId)
 	        throws SQLException, ClassNotFoundException {
 	    int rc = 0;
@@ -104,6 +136,7 @@ public class DiscountModel {
 	    ResultSet rs = null;
 	    
 	    try {
+	    	Class.forName("org.postgresql.Driver");
 	        // Obtain a database connection (adjust this to match your connection logic)
 	    	conn = DriverManager.getConnection(url, username, dbPassword);
 
