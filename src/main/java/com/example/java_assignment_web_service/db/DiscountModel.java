@@ -72,33 +72,11 @@ public class DiscountModel {
 		return discount;
 	}
 	
-	public int insertDiscount(
-			String code, 
-			Double discount_value, String description, 
-			Timestamp start_date, Timestamp end_date, 
-			Timestamp created_at
-			) throws SQLException, ClassNotFoundException {
-		Connection conn = null;
-		String sql = "";
-		int rc = 0;
-		try {
-			Class.forName("org.postgresql.Driver");
-			conn = DriverManager.getConnection(url, username, dbPassword);
-			sql = "INSERT INTO discounts (code, discount_value, description, start_date, end_date, created_at)"
-					+ "VALUES (?, ?, ?, ?, ?, ?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, code);
-			ps.setDouble(2, discount_value);
-			ps.setString(3, description);
-		} catch (Exception e) {
-			
-		}
-		return rc;
-	}
+	
 	
 	public ArrayList<DiscountOwner> viewDiscountOwners(int discountid) throws SQLException {
 	    ArrayList<DiscountOwner> discountOwners = new ArrayList<>();
-	    String sql = "SELECT discountid, discount_code, usage_allowed, userid FROM discount_owners WHERE discountid = ?";
+	    String sql = "SELECT id, discountid, discount_code, usage_allowed, userid FROM discount_owners WHERE discountid = ?";
 	    Connection conn = null;
 	    
 	    try {
@@ -126,7 +104,49 @@ public class DiscountModel {
 	    }
 	    return discountOwners;
 	}
+	
+	public ArrayList<DiscountOwner> getDiscountsByUser(int userid) throws SQLException {
+		ArrayList<DiscountOwner> userDiscounts = new ArrayList<DiscountOwner>();
+		String sql = "";
+		Connection conn = DriverManager.getConnection(url, username, dbPassword);
+		
+		try {
+			sql = "SELECT id, discountid, discount_code, usage_allowed, userid FROM discount_owners WHERE userid = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, userid);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+	            DiscountOwner discountOwner = new DiscountOwner();
+	            discountOwner.setId(rs.getInt("id"));
+	            discountOwner.setDiscountId(rs.getInt("discountid"));
+	            discountOwner.setDiscountCode(rs.getString("discount_code"));
+	            discountOwner.setUsageAllowed(rs.getInt("usage_allowed"));
+	            discountOwner.setUserid(rs.getInt("userid"));
+	            userDiscounts.add(discountOwner);
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		
+		return userDiscounts;
+	}
 
+	public int createDiscount(String code, Double discountValue, String description, Timestamp startDate, Timestamp endDate) throws SQLException, ClassNotFoundException {
+		Connection conn = DriverManager.getConnection(url, username, dbPassword);
+		try {
+			String sql = "INSERT INTO discounts"
+					+ "(code, discount_value, description, start_date, end_date)"
+					+ "VALUES (?, ?, ?, ?, ?);";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		int rc = 0;
+		return rc;
+	}
 	
 	public int addNewDiscountToUser(int discountId, int userId)
 	        throws SQLException, ClassNotFoundException {
@@ -188,5 +208,7 @@ public class DiscountModel {
 	    }
 	    return rc;
 	}
+	
+	
 
 }

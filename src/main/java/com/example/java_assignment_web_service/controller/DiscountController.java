@@ -5,6 +5,7 @@ import java.util.*;
 import com.example.java_assignment_web_service.db.Discount;
 import com.example.java_assignment_web_service.db.DiscountModel;
 import com.example.java_assignment_web_service.db.DiscountOwner;
+import com.example.java_assignment_web_service.db.UserModel;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 public class DiscountController {
 	
+	private UserModel userModel = new UserModel();
 	private DiscountModel model = new DiscountModel(); // so i dont have to keep on declaring this in the methods
 	
 	@RequestMapping(method=RequestMethod.GET, path="/getDiscount/{discountId}")
@@ -39,26 +41,36 @@ public class DiscountController {
 	}
 	
 	@RequestMapping(path="/createDiscount", consumes="application/json", method=RequestMethod.POST)
-	public int insertDiscount(@RequestBody Discount discount) {
+	public int createDiscount(@RequestBody Discount discount) {
 		int rc = 0;
 		try {
+			
 		} catch (Exception e) {
-			int id = discount.getId();
-			String code = discount.getCode();
-			Double discountValue = discount.getDiscountValue();
+			e.printStackTrace();
 		}
 		return rc;
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, path="/getDiscountOwner/{discountid}")
 	public ArrayList<DiscountOwner> viewDiscountOwners(@PathVariable("discountid") int discountid) {
-		ArrayList<DiscountOwner> discountOwners = null;
+		ArrayList<DiscountOwner> discountOwners = new ArrayList<DiscountOwner>();
 		try {
 			discountOwners = model.viewDiscountOwners(discountid);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return discountOwners;
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, path="/getDiscountUser/{userid}")
+	public ArrayList<DiscountOwner> getDiscountsByUser(@PathVariable("userid")int userid) {
+		ArrayList<DiscountOwner> userDiscount = new ArrayList<DiscountOwner>();
+		try {
+			userDiscount = model.getDiscountsByUser(userid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return userDiscount;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
@@ -71,4 +83,6 @@ public class DiscountController {
 		}
 		return rc;
 	}
+	
+	
 }
